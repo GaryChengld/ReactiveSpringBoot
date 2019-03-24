@@ -1,0 +1,26 @@
+version: '3.7'
+services:
+  app:
+    build: .
+    image: "examples/boot-redis"
+    container_name: "boot-redis"
+    volumes:
+      - c:/var/docker/volumes/logs:/app/logs
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Canada/Eastern
+    links:
+      - "db:redis"
+
+  db:
+    image: "redis"
+    container_name: "redis"
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+
+volumes:
+  redis-data:
+    name: redis-data
