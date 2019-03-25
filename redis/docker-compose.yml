@@ -23,4 +23,4 @@ services:
 
 volumes:
   redis-data:
-    name: redis-data
+    external: true
