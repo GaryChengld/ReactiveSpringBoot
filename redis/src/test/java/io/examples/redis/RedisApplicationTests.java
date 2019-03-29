@@ -32,4 +32,13 @@ public class RedisApplicationTests {
                 .exchange()
                 .expectStatus().isOk();
     }
+
+    @Test
+    public void notFound() {
+        client
+                .get()
+                .uri("/v1/product/000")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
 }
