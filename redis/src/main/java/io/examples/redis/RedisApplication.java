@@ -31,11 +31,10 @@ public class RedisApplication {
 
     @Bean
     ReactiveRedisOperations<String, Product> redisOperations(ReactiveRedisConnectionFactory factory) {
-        RedisSerializationContext<String, Product> context = RedisSerializationContext
-                .<String, Product>newSerializationContext(new StringRedisSerializer())
-                .hashKey(new StringRedisSerializer())
-                .hashValue(new Jackson2JsonRedisSerializer<>(Product.class))
-                .build();
+        Jackson2JsonRedisSerializer<Product> serializer = new Jackson2JsonRedisSerializer<>(Product.class);
+        RedisSerializationContext.RedisSerializationContextBuilder<String, Product> builder =
+                RedisSerializationContext.newSerializationContext(new StringRedisSerializer());
+        RedisSerializationContext<String, Product> context = builder.value(serializer).build();
         return new ReactiveRedisTemplate<>(factory, context);
     }
 

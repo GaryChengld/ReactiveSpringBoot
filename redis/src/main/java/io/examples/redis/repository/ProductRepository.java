@@ -21,26 +21,24 @@ public class ProductRepository {
     }
 
     public Flux<Product> findAll() {
-        return productOperations.<String, Product>opsForHash()
-                .values(KEY_PRODUCTS);
+        return productOperations.keys(KEY_PRODUCTS + ":*")
+                .flatMap(productOperations.opsForValue()::get);
     }
 
     public Mono<Product> findById(String id) {
-        return productOperations.<String, Product>opsForHash()
-                .get(KEY_PRODUCTS, id);
+        return productOperations.opsForValue().get(KEY_PRODUCTS + ":" + id);
     }
 
     public Mono<Product> save(Product product) {
         if (product.getId() == null) {
             product.setId(UUID.randomUUID().toString());
         }
-        return productOperations.<String, Product>opsForHash()
-                .put(KEY_PRODUCTS, product.getId(), product)
-                .map(p -> product);
+        return productOperations.opsForValue().set(KEY_PRODUCTS + ":" + product.getId(), product)
+                .map(b -> product);
     }
 
     public Mono<Void> deleteById(String id) {
-        return productOperations.<String, Product>opsForHash().remove(KEY_PRODUCTS, id)
+        return productOperations.opsForValue().delete(KEY_PRODUCTS + ":" + id)
                 .flatMap(p -> Mono.empty());
     }
 }
