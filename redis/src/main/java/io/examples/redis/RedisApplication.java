@@ -5,7 +5,6 @@ import io.examples.redis.handler.ProductHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
@@ -22,7 +21,6 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.n
  * @author Gary Cheng
  */
 @SpringBootApplication
-@Configuration
 public class RedisApplication {
 
     public static void main(String[] args) {
