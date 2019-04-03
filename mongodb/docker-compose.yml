@@ -1,0 +1,26 @@
+version: '3.7'
+services:
+  app:
+    build: .
+    image: "examples/boot-mongodb"
+    container_name: "boot-mongodb"
+    volumes:
+      - c:/var/docker/volumes/logs:/app/logs
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Canada/Eastern
+    links:
+      - "db:mongodb"
+
+  db:
+    image: "mongo"
+    container_name: "mongo"
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongodata:
+    external: true
