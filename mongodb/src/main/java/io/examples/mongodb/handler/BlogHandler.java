@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -39,9 +40,7 @@ public class BlogHandler {
 
     private Mono<ServerResponse> all(ServerRequest request) {
         log.debug("Received find all blogs request");
-        return ServerResponse.ok()
-                .contentType(APPLICATION_JSON)
-                .body(this.blogRepository.findAll(), Blog.class);
+        return this.buildResponse(this.blogRepository.findAll());
     }
 
     private Mono<ServerResponse> byId(ServerRequest request) {
@@ -53,9 +52,7 @@ public class BlogHandler {
 
     private Mono<ServerResponse> byAuthor(ServerRequest request) {
         log.debug("Received find blogs by author request");
-        return ServerResponse.ok()
-                .contentType(APPLICATION_JSON)
-                .body(this.blogRepository.findByAuthor(request.pathVariable("author")), Blog.class);
+        return this.buildResponse(this.blogRepository.findByAuthor(request.pathVariable("author")));
     }
 
     private Mono<ServerResponse> create(ServerRequest request) {
@@ -92,5 +89,11 @@ public class BlogHandler {
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
                 .body(fromObject(body));
+    }
+
+    private Mono<ServerResponse> buildResponse(Flux<Blog> blogs) {
+        return ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(blogs, Blog.class);
     }
 }
