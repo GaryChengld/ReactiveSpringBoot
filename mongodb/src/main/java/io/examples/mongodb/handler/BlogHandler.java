@@ -30,6 +30,7 @@ public class BlogHandler {
         return nest(accept(APPLICATION_JSON),
                 route(GET("/"), this::all)
                         .andRoute(GET("/{id}"), this::byId)
+                        .andRoute(GET("/byAuthor/{author}"), this::byAuthor)
                         .andRoute(POST("/"), this::create)
                         .andRoute(PUT("/{id}"), this::update)
                         .andRoute(DELETE("/{id}"), this::delete)
@@ -48,6 +49,13 @@ public class BlogHandler {
         return this.blogRepository.findById(request.pathVariable("id"))
                 .flatMap(this::buildResponse)
                 .switchIfEmpty(ServerResponse.notFound().build());
+    }
+
+    private Mono<ServerResponse> byAuthor(ServerRequest request) {
+        log.debug("Received find blogs by author request");
+        return ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(this.blogRepository.findByAuthor(request.pathVariable("author")), Blog.class);
     }
 
     private Mono<ServerResponse> create(ServerRequest request) {
