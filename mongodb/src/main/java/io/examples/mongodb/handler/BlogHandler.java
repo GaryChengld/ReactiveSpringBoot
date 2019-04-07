@@ -51,7 +51,7 @@ public class BlogHandler {
     }
 
     private Mono<ServerResponse> byAuthor(ServerRequest request) {
-        log.debug("Received find blogs by author request");
+        log.debug("Received find blog by author request");
         return this.buildResponse(this.blogRepository.findByAuthor(request.pathVariable("author")));
     }
 
