@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
 @Repository
-public interface BlogRepository extends ReactiveMongoRepository<Blog, String>, BlogCustomQuery {
+public interface BlogRepository extends ReactiveMongoRepository<Blog, String>, BlogSearchOperations {
     Flux<Blog> findByAuthor(String author);
 }
