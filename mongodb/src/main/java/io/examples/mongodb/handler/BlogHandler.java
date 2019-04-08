@@ -32,7 +32,7 @@ public class BlogHandler {
                 route(GET("/"), this::all)
                         .andRoute(GET("/{id}"), this::byId)
                         .andRoute(GET("/byAuthor/{author}"), this::byAuthor)
-                        .andRoute(GET("/byKeyword/{keyword}"), this::byKwyword)
+                        .andRoute(GET("/search/{keyword}"), this::search)
                         .andRoute(POST("/"), this::create)
                         .andRoute(PUT("/{id}"), this::update)
                         .andRoute(DELETE("/{id}"), this::delete)
@@ -56,7 +56,7 @@ public class BlogHandler {
         return this.buildResponse(this.blogRepository.findByAuthor(request.pathVariable("author")));
     }
 
-    private Mono<ServerResponse> byKwyword(ServerRequest request) {
+    private Mono<ServerResponse> search(ServerRequest request) {
         log.debug("Received find blog by author request");
         return this.buildResponse(this.blogRepository.searchByKeyword(request.pathVariable("keyword")));
     }

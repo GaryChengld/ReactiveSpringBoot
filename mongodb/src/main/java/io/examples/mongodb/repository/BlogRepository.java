@@ -7,5 +7,11 @@ import reactor.core.publisher.Flux;
 
 @Repository
 public interface BlogRepository extends ReactiveMongoRepository<Blog, String>, BlogSearchOperations {
+    /**
+     * Find blog by author
+     *
+     * @param author
+     * @return
+     */
     Flux<Blog> findByAuthor(String author);
 }

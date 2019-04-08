@@ -22,7 +22,7 @@ public class BlogSearchOperationsImpl implements BlogSearchOperations {
     @Override
     public Flux<Blog> searchByKeyword(String keyword) {
         log.debug("Search by keyword:{}", keyword);
-        TextQuery query = new TextQuery(new TextCriteria().matchingAny(keyword));
+        TextQuery query = new TextQuery(new TextCriteria().matchingAny(keyword).caseSensitive(false)).sortByScore();
         return template.find(query, Blog.class);
     }
 }
