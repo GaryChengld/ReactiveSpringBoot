@@ -8,3 +8,7 @@ spring.data.mongodb:
   username: admin
   password: manager
   authenticationDatabase: admin
+
+  redis:
+    host: localhost
+    port: 6379
