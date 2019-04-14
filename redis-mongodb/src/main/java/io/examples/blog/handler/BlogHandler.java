@@ -1,7 +1,7 @@
 package io.examples.blog.handler;
 
 import io.examples.blog.domain.Blog;
-import io.examples.blog.repository.BlogRepository;
+import io.examples.blog.service.BlogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -21,10 +21,10 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Component
 @Slf4j
 public class BlogHandler {
-    private final BlogRepository blogRepository;
+    private final BlogService blogService;
 
-    public BlogHandler(BlogRepository blogRepository) {
-        this.blogRepository = blogRepository;
+    public BlogHandler(BlogService blogService) {
+        this.blogService = blogService;
     }
 
     public RouterFunction<ServerResponse> getRouterFunction() {
@@ -41,30 +41,30 @@ public class BlogHandler {
 
     private Mono<ServerResponse> all(ServerRequest request) {
         log.debug("Received find all blogs request");
-        return this.buildResponse(this.blogRepository.findAll());
+        return this.buildResponse(this.blogService.findAll());
     }
 
     private Mono<ServerResponse> byId(ServerRequest request) {
         log.debug("Received find blog by id request");
-        return this.blogRepository.findById(request.pathVariable("id"))
+        return this.blogService.findById(request.pathVariable("id"))
                 .flatMap(this::buildResponse)
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
     private Mono<ServerResponse> byAuthor(ServerRequest request) {
         log.debug("Received find blog by author request");
-        return this.buildResponse(this.blogRepository.findByAuthor(request.pathVariable("author")));
+        return this.buildResponse(this.blogService.findByAuthor(request.pathVariable("author")));
     }
 
     private Mono<ServerResponse> search(ServerRequest request) {
         log.debug("Received find blog by author request");
-        return this.buildResponse(this.blogRepository.searchByKeyword(request.pathVariable("keyword")));
+        return this.buildResponse(this.blogService.search(request.pathVariable("keyword")));
     }
 
     private Mono<ServerResponse> create(ServerRequest request) {
         log.debug("Received create blog request");
         return request.bodyToMono(Blog.class)
-                .flatMap(this.blogRepository::save)
+                .flatMap(this.blogService::save)
                 .flatMap(this::buildResponse);
     }
 
@@ -73,7 +73,7 @@ public class BlogHandler {
         AtomicReference<Blog> blogRef = new AtomicReference<>();
         return request.bodyToMono(Blog.class)
                 .doOnNext(blogRef::set)
-                .flatMap(b -> this.blogRepository.findById(request.pathVariable("id")))
+                .flatMap(b -> this.blogService.findById(request.pathVariable("id")))
                 .map(b -> {
                     Blog blog = blogRef.get();
                     b.setTitle(blog.getTitle());
@@ -81,14 +81,14 @@ public class BlogHandler {
                     b.setAuthor(blog.getAuthor());
                     return b;
                 })
-                .flatMap(this.blogRepository::save)
+                .flatMap(this.blogService::save)
                 .flatMap(this::buildResponse)
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
     private Mono<ServerResponse> delete(ServerRequest request) {
         log.debug("Received delete blog request");
-        return ServerResponse.noContent().build(this.blogRepository.deleteById(request.pathVariable("id")));
+        return ServerResponse.noContent().build(this.blogService.deleteById(request.pathVariable("id")));
     }
 
     private <T> Mono<ServerResponse> buildResponse(T body) {
