@@ -32,12 +32,15 @@ public class BlogService {
 
     public Mono<Blog> findById(String id) {
         log.debug("Find blog by id, id:{}", id);
-        return blogRepository.findById(id);
+        return redisBlogCache.get(id)
+                .switchIfEmpty(this.findByIdFromDB(id))
+                .map(b -> null == b.getId() ? null : b);
     }
 
     public Mono<Blog> save(Blog blog) {
         log.debug("Save blog, blog:{}", blog);
-        return blogRepository.save(blog);
+        return blogRepository.save(blog)
+                .flatMap(redisBlogCache::set);
     }
 
     public Mono<Void> deleteById(String id) {
@@ -48,5 +51,12 @@ public class BlogService {
     public Flux<Blog> search(String text) {
         log.debug("Search blogs, search text:{}", text);
         return blogRepository.searchByKeyword(text);
+    }
+
+    private Mono<Blog> findByIdFromDB(String id) {
+        log.debug("Load blog from DB");
+        return this.blogRepository.findById(id)
+                .defaultIfEmpty(new Blog())
+                .flatMap(redisBlogCache::set);
     }
 }
