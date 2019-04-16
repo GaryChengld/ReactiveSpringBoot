@@ -1,5 +1,7 @@
 package io.examples.blog.repository;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.examples.blog.domain.Blog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
@@ -24,10 +26,15 @@ public class RedisBlogCache {
         return bolgOperations.opsForValue().get(KEY_BLOG + ":" + id);
     }
 
-    public Mono<Blog> set(Blog blog) {
+    public Mono<Blog> set(String id, Blog blog) {
         log.debug("Set blog to cache, blog:{}", blog);
-        return bolgOperations.opsForValue().set(KEY_BLOG + ":" + blog.getId(), blog)
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            log.debug(objectMapper.writeValueAsString(blog));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return bolgOperations.opsForValue().set(KEY_BLOG + ":" + id, blog)
                 .map(b -> blog);
     }
-
 }

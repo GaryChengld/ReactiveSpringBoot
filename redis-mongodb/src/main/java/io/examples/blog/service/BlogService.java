@@ -33,14 +33,14 @@ public class BlogService {
     public Mono<Blog> findById(String id) {
         log.debug("Find blog by id, id:{}", id);
         return redisBlogCache.get(id)
-                .switchIfEmpty(this.findByIdFromDB(id))
+                .switchIfEmpty(Mono.defer(() -> this.findByIdFromDB(id)))
                 .map(b -> null == b.getId() ? null : b);
     }
 
     public Mono<Blog> save(Blog blog) {
         log.debug("Save blog, blog:{}", blog);
         return blogRepository.save(blog)
-                .flatMap(redisBlogCache::set);
+                .flatMap(b -> redisBlogCache.set(b.getId(), b));
     }
 
     public Mono<Void> deleteById(String id) {
@@ -57,6 +57,6 @@ public class BlogService {
         log.debug("Load blog from DB");
         return this.blogRepository.findById(id)
                 .defaultIfEmpty(new Blog())
-                .flatMap(redisBlogCache::set);
+                .flatMap(b -> redisBlogCache.set(id, b));
     }
 }
