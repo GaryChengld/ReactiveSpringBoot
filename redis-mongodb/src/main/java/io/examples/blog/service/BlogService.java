@@ -34,7 +34,7 @@ public class BlogService {
         log.debug("Find blog by id, id:{}", id);
         return redisBlogCache.get(id)
                 .switchIfEmpty(Mono.defer(() -> this.findByIdFromDB(id)))
-                .flatMap(b -> null == b.getId() ? Mono.empty() : Mono.just(b));
+                .filter(b -> null != b.getId());
     }
 
     public Mono<Blog> save(Blog blog) {
