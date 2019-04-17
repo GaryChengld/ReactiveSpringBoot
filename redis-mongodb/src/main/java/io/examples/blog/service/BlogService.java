@@ -45,7 +45,9 @@ public class BlogService {
 
     public Mono<Void> deleteById(String id) {
         log.debug("Delete blog by id, id:{}", id);
-        return blogRepository.deleteById(id);
+        return blogRepository.deleteById(id)
+                .then(Mono.defer(() -> this.redisBlogCache.set(id, new Blog())))
+                .thenEmpty(Mono.empty());
     }
 
     public Flux<Blog> search(String text) {

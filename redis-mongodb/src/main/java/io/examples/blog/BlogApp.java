@@ -2,6 +2,7 @@ package io.examples.blog;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.examples.blog.domain.Blog;
 import io.examples.blog.handler.BlogHandler;
 import org.springframework.boot.SpringApplication;
@@ -33,8 +34,9 @@ public class BlogApp {
     }
 
     @Bean
-    ReactiveRedisOperations<String, Blog> redisOperations(ReactiveRedisConnectionFactory factory) {
+    ReactiveRedisOperations<String, Blog> redisOperations(ReactiveRedisConnectionFactory factory, ObjectMapper mapper) {
         Jackson2JsonRedisSerializer<Blog> serializer = new Jackson2JsonRedisSerializer<>(Blog.class);
+        serializer.setObjectMapper(mapper);
         RedisSerializationContext.RedisSerializationContextBuilder<String, Blog> builder =
                 RedisSerializationContext.newSerializationContext(new StringRedisSerializer());
         RedisSerializationContext<String, Blog> context = builder.value(serializer).build();
