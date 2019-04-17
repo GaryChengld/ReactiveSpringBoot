@@ -2,8 +2,8 @@ version: '3.7'
 services:
   app:
     build: .
-    image: "examples/boot-mongodb"
-    container_name: "boot-mongodb"
+    image: "examples/boot-redis-mongo"
+    container_name: "boot-redis-mongo"
     volumes:
       - c:/var/docker/volumes/logs:/app/logs
     ports:
@@ -11,9 +11,10 @@ services:
     environment:
       TZ: Canada/Eastern
     links:
-      - "db:mongodb"
+      - mongo
+      - redis
 
-  db:
+  mongo:
     image: "mongo"
     container_name: "mongo"
     volumes:
@@ -21,6 +22,16 @@ services:
     ports:
       - "27017:27017"
 
+  redis:
+    image: "redis"
+    container_name: "redis"
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+
 volumes:
   mongodata:
+    external: true
+  redis-data:
     external: true
