@@ -32,7 +32,6 @@ public class BlogHandler {
                 route(GET("/"), this::all)
                         .andRoute(GET("/{id}"), this::byId)
                         .andRoute(GET("/byAuthor/{author}"), this::byAuthor)
-                        .andRoute(GET("/search/{keyword}"), this::search)
                         .andRoute(POST("/"), this::create)
                         .andRoute(PUT("/{id}"), this::update)
                         .andRoute(DELETE("/{id}"), this::delete)
@@ -46,7 +45,7 @@ public class BlogHandler {
 
     private Mono<ServerResponse> byId(ServerRequest request) {
         log.debug("Received find blog by id request");
-        return this.blogRepository.findById(request.pathVariable("id"))
+        return this.blogRepository.findById(Integer.valueOf(request.pathVariable("id")))
                 .flatMap(this::buildResponse)
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
@@ -54,11 +53,6 @@ public class BlogHandler {
     private Mono<ServerResponse> byAuthor(ServerRequest request) {
         log.debug("Received find blog by author request");
         return this.buildResponse(this.blogRepository.findByAuthor(request.pathVariable("author")));
-    }
-
-    private Mono<ServerResponse> search(ServerRequest request) {
-        log.debug("Received find blog by author request");
-        return this.buildResponse(this.blogRepository.searchByKeyword(request.pathVariable("keyword")));
     }
 
     private Mono<ServerResponse> create(ServerRequest request) {
@@ -73,7 +67,7 @@ public class BlogHandler {
         AtomicReference<Blog> blogRef = new AtomicReference<>();
         return request.bodyToMono(Blog.class)
                 .doOnNext(blogRef::set)
-                .flatMap(b -> this.blogRepository.findById(request.pathVariable("id")))
+                .flatMap(b -> this.blogRepository.findById(Integer.valueOf(request.pathVariable("id"))))
                 .map(b -> {
                     Blog blog = blogRef.get();
                     b.setTitle(blog.getTitle());
@@ -88,7 +82,7 @@ public class BlogHandler {
 
     private Mono<ServerResponse> delete(ServerRequest request) {
         log.debug("Received delete blog request");
-        return ServerResponse.noContent().build(this.blogRepository.deleteById(request.pathVariable("id")));
+        return ServerResponse.noContent().build(this.blogRepository.deleteById(Integer.valueOf(request.pathVariable("id"))));
     }
 
     private <T> Mono<ServerResponse> buildResponse(T body) {
