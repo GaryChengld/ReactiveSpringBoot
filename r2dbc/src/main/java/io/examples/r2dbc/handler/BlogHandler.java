@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -58,6 +59,7 @@ public class BlogHandler {
     private Mono<ServerResponse> create(ServerRequest request) {
         log.debug("Received create blog request");
         return request.bodyToMono(Blog.class)
+                .doOnSuccess(blog -> blog.setCreatedDate(LocalDateTime.now()))
                 .flatMap(this.blogRepository::save)
                 .flatMap(this::buildResponse);
     }
