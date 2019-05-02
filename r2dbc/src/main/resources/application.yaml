@@ -1,2 +1,9 @@
 server:
   port: 8080
+
+spring.data.postgres:
+  host: localhost
+  port: 5432
+  database: myDB
+  username: postgres
+  password: manager

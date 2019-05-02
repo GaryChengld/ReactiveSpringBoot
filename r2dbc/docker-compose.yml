@@ -2,8 +2,8 @@ version: '3.7'
 services:
   app:
     build: .
-    image: "examples/boot-mongodb"
-    container_name: "boot-mongodb"
+    image: "examples/boot-postgres"
+    container_name: "boot-postgres"
     volumes:
       - c:/var/docker/volumes/logs:/app/logs
     ports:
@@ -11,16 +11,16 @@ services:
     environment:
       TZ: Canada/Eastern
     links:
-      - "db:mongodb"
+      - "db:postgres"
 
   db:
-    image: "mongo"
-    container_name: "mongo"
+    image: "postgres"
+    container_name: "postgres"
     volumes:
-      - mongodata:/data/db
+      - pgdata:/var/lib/postgresql/data
     ports:
-      - "27017:27017"
+      - "5432:5432"
 
 volumes:
-  mongodata:
+  pgdata:
     external: true
