@@ -1,0 +1,26 @@
+version: '3.7'
+services:
+  app:
+    build: .
+    image: "examples/boot-rxjava-postgres"
+    container_name: "boot-rxjava-postgres"
+    volumes:
+      - c:/var/docker/volumes/logs:/app/logs
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Canada/Eastern
+    links:
+      - "db:postgres"
+
+  db:
+    image: "postgres"
+    container_name: "postgres"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:
+    external: true
