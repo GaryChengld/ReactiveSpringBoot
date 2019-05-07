@@ -2,7 +2,7 @@ package io.examples.blog.service;
 
 import io.examples.blog.domain.Blog;
 import io.examples.blog.repository.BlogRepository;
-import io.examples.blog.repository.RedisBlogCache;
+import io.examples.blog.repository.BlogCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class BlogService {
     @Autowired
     private BlogRepository blogRepository;
     @Autowired
-    private RedisBlogCache redisBlogCache;
+    private BlogCache redisBlogCache;
 
     public Flux<Blog> findAll() {
         log.debug("Find all blogs");

@@ -11,11 +11,11 @@ import reactor.core.publisher.Mono;
  */
 @Component
 @Slf4j
-public class RedisBlogCache {
+public class BlogCache {
     private final ReactiveRedisOperations<String, Blog> bloOperations;
     private static final String KEY_BLOG = "Blog";
 
-    public RedisBlogCache(ReactiveRedisOperations<String, Blog> bloOperations) {
+    public BlogCache(ReactiveRedisOperations<String, Blog> bloOperations) {
         this.bloOperations = bloOperations;
     }
 
